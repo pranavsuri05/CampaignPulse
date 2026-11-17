@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 20% 98%;
+  --foreground: 224 30% 12%;
+  --card: 0 0% 100%;
+  --border: 220 16% 90%;
+  --muted: 220 18% 96%;
+  --muted-foreground: 222 12% 42%;
+  --primary: 246 62% 52%;
+  --primary-foreground: 0 0% 100%;
+  --primary-soft: 246 80% 96%;
+  --success: 152 60% 32%;
+  --success-soft: 150 55% 94%;
+  --warning: 32 90% 38%;
+  --warning-soft: 40 95% 93%;
+  --danger: 0 68% 46%;
+  --danger-soft: 0 85% 96%;
+}
+
+body { @apply bg-background text-foreground antialiased; font-feature-settings: "cv11", "ss01"; }
+h1 { @apply text-[22px] font-semibold tracking-tight; }
+h2 { @apply text-base font-semibold tracking-tight; }
+:focus-visible { @apply outline-none ring-2 ring-primary/40 ring-offset-1; }
+.tabular { font-variant-numeric: tabular-nums; }

@@ -1,0 +1,15 @@
+.env
+.env.local
+node_modules/
+.next/
+.next-e2e/
+__pycache__/
+.venv/
+*.db
+backend/data/
+frontend/test-results/
+frontend/playwright-report/
+frontend/e2e/results.json
+.pytest_cache/
+.ruff_cache/
+*.tsbuildinfo
