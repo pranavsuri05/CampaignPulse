@@ -39,6 +39,6 @@ Navigation (exactly five items, active state, breadcrumb, Simulation banner); `E
 - `setup.sh` was run on a machine that already had the virtualenv and `node_modules`; a first-run on a clean machine was not verified.
 - Airmeet's website was not inspected; the visual identity (indigo accent, light neutral UI) is an interpretation, not a derived match.
 - Simulated engagement timestamps are synthetic offsets after the send time and may lie slightly in the future.
-- PostgreSQL migration was not tested.
+- PostgreSQL: after the original report, the Alembic migration and all 76 backend tests were run against a local PostgreSQL 16.14 (`TEST_DATABASE_URL=postgresql+psycopg://… pytest`) and passed. Not tested on Neon itself; the Playwright E2E suite was not run on Postgres.
 - Dependencies: Next.js was upgraded from 15.1.3 to 15.5.29 to clear a critical advisory (all gates re-run afterwards and passed). `npm audit --omit=dev` still reports a PostCSS advisory (bundled inside Next) and a Zod 3 advisory whose fix requires the Zod 4 major; neither was addressed. `@playwright/test` is pinned to 1.49.1 to match the installed browser build.
 - Delivery is simulated only; **no real email delivery was implemented or tested** and no Airmeet API integration exists.

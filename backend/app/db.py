@@ -27,6 +27,8 @@ def make_engine(url: str | None = None) -> Engine:
 
             path = url.replace("sqlite:///", "", 1)
             Path(path).parent.mkdir(parents=True, exist_ok=True)
+    else:
+        kwargs["pool_pre_ping"] = True  # serverless Postgres (e.g. Neon) drops idle connections
     engine = create_engine(url, **kwargs)
     if url.startswith("sqlite"):
 

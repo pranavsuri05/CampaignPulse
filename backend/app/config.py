@@ -23,7 +23,11 @@ class Settings(BaseSettings):
     @field_validator("database_url")
     @classmethod
     def _resolve_sqlite_path(cls, v: str) -> str:
-        """Relative SQLite paths are resolved against backend/ so they work from any working directory."""
+        """Normalise Postgres URLs to the psycopg driver; resolve relative SQLite paths against backend/."""
+        # Hosted Postgres providers (Neon, Render, Heroku) hand out postgres:// or postgresql:// URLs.
+        for scheme in ("postgres://", "postgresql://"):
+            if v.startswith(scheme):
+                return "postgresql+psycopg://" + v[len(scheme):]
         prefix = "sqlite:///"
         if v.startswith(prefix) and not v.startswith("sqlite:////") and ":memory:" not in v:
             return f"{prefix}{(BACKEND_DIR / v[len(prefix):]).resolve()}"

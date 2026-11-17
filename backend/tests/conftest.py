@@ -11,7 +11,9 @@ from app.models import Base
 
 @pytest.fixture()
 def db_session():
-    engine = make_engine("sqlite://")
+    # Set TEST_DATABASE_URL to run the whole suite against a real database (e.g. Postgres).
+    engine = make_engine(os.environ.get("TEST_DATABASE_URL") or "sqlite://")
+    Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
     S = sessionmaker(bind=engine, autoflush=False, expire_on_commit=False)
     with S() as s:

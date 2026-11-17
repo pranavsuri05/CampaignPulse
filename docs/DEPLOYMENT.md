@@ -2,6 +2,21 @@
 
 Campaign Pulse is a local-first prototype. Nothing here is deployed, and no paid hosting is used.
 
+## Free hosting recipe: Vercel + Render + Neon
+Prepared for a public demo; **not deployed by this repository's tooling**. Steps run in your own accounts (no card is needed for the free tiers as far as I know; check each sign-up page).
+
+1. **Database — Neon (free Postgres).** Create a project, copy the connection string (`postgresql://…?sslmode=require`). The app accepts it as is and uses the `psycopg` driver.
+2. **API — Render (free web service).** New → Blueprint → select this repo (it reads `render.yaml`). Set `DATABASE_URL` (Neon string) and `CORS_ORIGINS` (your Vercel URL, set after step 3, then redeploy). On every start the service runs `alembic upgrade head`, then `uvicorn`.
+3. **Frontend — Vercel (Hobby).** Import the repo, set **Root Directory = `frontend`**, add `NEXT_PUBLIC_API_BASE_URL=https://<your-render-service>.onrender.com`, deploy. The value is inlined at build time, so changing it requires a redeploy.
+4. Check `https://<render>/api/health`, then open the Vercel URL.
+
+Free-tier behaviour to expect (verified against provider documentation/pricing pages on 2026-11-17; limits change, so re-check):
+- **Render free:** sleeps after 15 minutes without traffic; the next request takes roughly 30–60 s to wake. 750 free instance hours per month. The filesystem is ephemeral, which is why the database is external.
+- **Neon free:** about 1 GB storage and 100 compute-hours per project per month, scales to zero when idle (short wake-up on first query); writes fail if storage is exceeded. The app enables `pool_pre_ping` to survive dropped idle connections.
+- **Vercel Hobby:** free for personal, non-commercial use only.
+- **No authentication:** anyone with the URL can import, edit and delete data. Use only fictional data, keep the URL unlisted, and treat the demo as resettable. `API_KEY` does not help because the browser app would expose it.
+- Postgres compatibility was verified with the full backend suite and Alembic migration against a local PostgreSQL 16.14. It has **not** been exercised on Neon itself, and the Playwright E2E suite runs on SQLite only.
+
 ## Preparation
 1. `scripts/test.sh` must pass.
 2. Build the frontend with the **public** API URL: `NEXT_PUBLIC_API_BASE_URL=https://api.example.com npx next build` (the value is inlined at build time).
@@ -10,7 +25,7 @@ Campaign Pulse is a local-first prototype. Nothing here is deployed, and no paid
 ## Environment variables
 | Variable | Default | Notes |
 | --- | --- | --- |
-| `DATABASE_URL` | `sqlite:///./data/campaign_pulse.db` (relative to `backend/`) | Use `postgresql+psycopg://user:pass@host/db` in production (add `psycopg[binary]` to requirements) |
+| `DATABASE_URL` | `sqlite:///./data/campaign_pulse.db` (relative to `backend/`) | `postgresql://user:pass@host/db` also works (`psycopg` is already in requirements) |
 | `CORS_ORIGINS` | `http://localhost:3000,...` | Exact frontend origin(s) |
 | `EMAIL_PROVIDER` | `simulation` | Only `simulation` exists |
 | `MAX_UPLOAD_BYTES` / `MAX_IMPORT_ROWS` | 5 MB / 20000 | Import limits |
